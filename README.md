@@ -1,4 +1,5 @@
 # HelloFood
-Food stall list and order
+Show food stall list and its menu.
+Then users can take order.
 
-Use Express and material.css
+Use Express framework、material.css and will be hosted on firebase.
