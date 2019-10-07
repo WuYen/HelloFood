@@ -9,44 +9,46 @@ app.get("/", (req, res) => {
 });
 
 app.get("/store", (req, res) => {
-    //var time = Date.now().toString();
-    //res.sendFile("Store page!");
     res.sendFile(path.join(__dirname + "/views/store.html"));
 });
 
 const sql = require("mssql");
 app.get("/api/getstore", function (req, res) {
-    sql
-        .connect({
-            user: "",
-            password: "",
-            server: "",
-            database: ""
-        })
-        .then(pool => {
-            // Query
-            return (
-                pool
-                    .request()
-                    //.input("input_parameter", sql.Int, value)
-                    .query("select * from StoreInfo") // where id = @input_parameter
-            );
-        })
-        .then(result => {
-            console.dir(result);
-            sql.close();
-            res.json(result.recordsets);
-        })
-        .catch(err => {
-            // ... error checks
-            sql.close();
-            res.json("Error");
-        });
+    sql.connect({
+        user: "sa",
+        password: "P@ssw0rd",
+        server: "127.0.0.1",
+        database: "hellofood"
+    }).then(pool => {
+        // Query
+        return (
+            pool
+                .request()
+                //.input("input_parameter", sql.Int, value)
+                .query("select * from StoreInfo") // where id = @input_parameter
+        );
+    }).then(result => {
+        console.dir(result);
+        sql.close();
+        res.json(result.recordsets);
+    }).catch(err => {
+        // ... error checks
+        sql.close();
+        res.json("Error");
+    });
 });
 
+const helper = require('./test.js');
+
 app.get("/timestamp", (req, res) => {
-    var time = Date.now().toString();
+    var time = helper.f2().toString();
     res.send("timestamp: " + time);
+});
+
+app.get("/test", (req, res) => {
+    helper.getStoreInfo().then(result => { res.json(result); }).catch(err => {
+        res.status(500).json({ message: 'Server error' });
+    });;
 });
 
 exports.app = functions.https.onRequest(app);
