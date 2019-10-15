@@ -26,22 +26,37 @@ app.get("/api/getstore", function (req, res) {
         });
 });
 
-//app.post("/api/addStore", function (req, res) {
-//    db_store
-//        .addStore()
-//        .then(result => {
-//            res.json(result.recordsets);
-//        })
-//        .catch(err => {
-//            res.status(500).json({ message: "Server error" + err });
-//        });
-//});
-
 app.post('/api/addStore', function (req, res) {
-    console.dir("收到");
+    console.dir("收到addStore");
     console.dir(req.body);
     db_store
         .addStore(req.body)
+        .then(result => {
+            res.json(result);
+        })
+        .catch(err => {
+            res.status(500).json({ message: "Server error" + err });
+        });
+})
+
+app.post('/api/updateStore', function (req, res) {
+    console.dir("收到updateStore");
+    console.dir(req.body);
+    db_store
+        .updateStore(req.body)
+        .then(result => {
+            res.json(result);
+        })
+        .catch(err => {
+            res.status(500).json({ message: "Server error" + err });
+        });
+})
+
+app.post('/api/removeStore', function (req, res) {
+    console.dir("收到removeStore");
+    console.dir(req.body);
+    db_store
+        .removeStore(req.body)
         .then(result => {
             res.json(result);
         })
