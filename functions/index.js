@@ -1,64 +1,73 @@
-const functions = require('firebase-functions');
+﻿const functions = require("firebase-functions");
 const express = require("express");
 
 const app = express();
 const path = require("path");
+
+var bodyParser = require('body-parser')
 
 app.get("/", (req, res) => {
     res.send("Root page!");
 });
 
 app.get("/store", (req, res) => {
-    //var time = Date.now().toString();
-    //res.sendFile("Store page!");
     res.sendFile(path.join(__dirname + "/views/store.html"));
 });
 
-const sql = require("mssql");
+const db_store = require("./js/db_store.js");
 app.get("/api/getstore", function (req, res) {
-    sql
-        .connect({
-            user: "",
-            password: "",
-            server: "",
-            database: ""
-        })
-        .then(pool => {
-            // Query
-            return (
-                pool
-                    .request()
-                    //.input("input_parameter", sql.Int, value)
-                    .query("select * from StoreInfo") // where id = @input_parameter
-            );
-        })
+    db_store
+        .getStore()
         .then(result => {
-            console.dir(result);
-            sql.close();
             res.json(result.recordsets);
         })
         .catch(err => {
-            // ... error checks
-            sql.close();
-            res.json("Error");
+            res.status(500).json({ message: "Server error" + err });
         });
 });
 
-app.get("/timestamp", (req, res) => {
-    var time = Date.now().toString();
-    res.send("timestamp: " + time);
-});
+app.post('/api/addStore', function (req, res) {
+    console.dir("收到addStore");
+    console.dir(req.body);
+    db_store
+        .addStore(req.body)
+        .then(result => {
+            res.json(result);
+        })
+        .catch(err => {
+            res.status(500).json({ message: "Server error" + err });
+        });
+})
+
+app.post('/api/updateStore', function (req, res) {
+    console.dir("收到updateStore");
+    console.dir(req.body);
+    db_store
+        .updateStore(req.body)
+        .then(result => {
+            res.json(result);
+        })
+        .catch(err => {
+            res.status(500).json({ message: "Server error" + err });
+        });
+})
+
+app.post('/api/removeStore', function (req, res) {
+    console.dir("收到removeStore");
+    console.dir(req.body);
+    db_store
+        .removeStore(req.body)
+        .then(result => {
+            res.json(result);
+        })
+        .catch(err => {
+            res.status(500).json({ message: "Server error" + err });
+        });
+})
+
+// app.get("/timestamp", (req, res) => {
+//   var time = helper.f2().toString();
+//   res.send("timestamp: " + time);
+// });
 
 exports.app = functions.https.onRequest(app);
-
-//const path = require("path");
-//app.get("/", function (req, res) {
-    //res.sendFile(path.join(__dirname + "/view/store.html"));
-//});
-
-//app.use(express.static(__dirname + "/src"));
-
-//const port = process.env.PORT || 3009;
-//app.listen(port, function () {
-    //console.log("Example app listening on port " + port + "!");
-//});
