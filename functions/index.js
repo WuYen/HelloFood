@@ -27,8 +27,7 @@ app.get("/api/getstore", function (req, res) {
 });
 
 app.post('/api/addStore', function (req, res) {
-    console.dir("收到addStore");
-    console.dir(req.body);
+    console.dir("收到 addStore payloads are, ",req.body);
     db_store
         .addStore(req.body)
         .then(result => {
